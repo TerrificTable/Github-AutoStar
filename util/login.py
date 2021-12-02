@@ -1,4 +1,4 @@
-from common import debug
+from util.common import debug
 from time import sleep
 from lxml import html
 

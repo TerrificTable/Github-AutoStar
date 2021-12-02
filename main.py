@@ -2,8 +2,6 @@ from selenium.webdriver import ChromeOptions
 from selenium import webdriver
 from util.common import title
 from util.login import login
-from time import sleep
-from lxml import html
 import requests
 import zipfile
 import json
@@ -15,10 +13,10 @@ headless = False
 options = ChromeOptions()
 options.headless = headless
 options.add_experimental_option("excludeSwitches", ["enable-logging"])
+usernames = []
 
 
 def get_config():
-    global usernames, username, multiAcc, logins
     with open("./config.json") as f:
         config = json.load(f)
 
@@ -26,8 +24,11 @@ def get_config():
         if str(multiAcc) == "true":
             multiAcc = True
             usernames = config["Github-Usernames"]
+        else:
+            usernames = []
         username = config["Github-Username"]
         logins = config['logins']
+        return usernames, username, multiAcc, logins
 
 
 def download_chromedriver():
@@ -43,12 +44,11 @@ def download_chromedriver():
 
         with zipfile.ZipFile(latest_driver_zip, 'r') as zip_ref:
             zip_ref.extractall()
-            print("Chromedriver Installed")
         os.remove(latest_driver_zip)
 
 
 def main():
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=options)
     if not multiAcc:
         usernames = [].append(username)
     login(driver, usernames, multiAcc, logins)
@@ -58,6 +58,7 @@ if __name__ == "__main__":
     title("Installing Chromedriver")
     download_chromedriver()
     title("Starting")
+    usernames, username, multiAcc, logins = get_config()
     main()
 
 
