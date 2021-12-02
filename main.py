@@ -18,7 +18,7 @@ options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
 
 def get_config():
-    global username, usernames, multiAcc
+    global usernames, username, multiAcc, logins
     with open("./config.json") as f:
         config = json.load(f)
 
@@ -27,6 +27,7 @@ def get_config():
             multiAcc = True
             usernames = config["Github-Usernames"]
         username = config["Github-Username"]
+        logins = config['logins']
 
 
 def download_chromedriver():
@@ -48,13 +49,13 @@ def download_chromedriver():
 
 def main():
     driver = webdriver.Chrome()
-    if multiAcc == True:
-        for user in usernames:
-            url = "https://github.com/{}".format(user)
-            login(driver, url)
+    if not multiAcc:
+        usernames = [].append(username)
+    login(driver, usernames, multiAcc, logins)
 
 
 if __name__ == "__main__":
-    title("Idle")
+    title("Installing Chromedriver")
     download_chromedriver()
+    title("Starting")
     main()

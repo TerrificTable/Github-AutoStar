@@ -1,5 +1,6 @@
 from selenium.webdriver import ChromeOptions
 from selenium import webdriver
+from util.common import debug
 from time import sleep
 from lxml import html
 import json
@@ -10,6 +11,7 @@ options = ChromeOptions()
 options.headless = headless
 options.add_experimental_option("excludeSwitches", ["enable-logging"])
 
+stared = []
 driver = webdriver.Chrome(options=options)
 url = "https://github.com/TerrificTable"
 driver.get(url)
@@ -22,7 +24,7 @@ tree = html.fromstring(driver.page_source)
 
 
 def get_config():
-    global username, usernames, multiAcc, login_username, login_password
+    global usernames, multiAcc, logins
     with open("./config.json") as f:
         config = json.load(f)
 
@@ -31,8 +33,7 @@ def get_config():
             multiAcc = True
             usernames = config["Github-Usernames"]
         username = config["Github-Username"]
-        login_username = config["logins"]["username"]
-        login_password = config["logins"]["password"]
+        logins = config["logins"]
 
 
 def loaded(xpath, xpath1=None):
@@ -55,7 +56,6 @@ for product_tree in tree.xpath('//*[@id="user-repositories-list"]/ul'):
     titles = product_tree.xpath('//a[@itemprop="name codeRepository"]/text()')
     for title in titles:
         title = str(title).replace(" ", "").replace("\n", "")
-        print(title)
         driver.get(url + f"/{title}")
 
         star = loaded('//button[contains(@data-ga-click, "text:Star")]',
@@ -66,10 +66,10 @@ for product_tree in tree.xpath('//*[@id="user-repositories-list"]/ul'):
         password = driver.find_element_by_xpath('//*[@id="password"]')
 
         username.clear()
-        username.send_keys(login_username)
+        username.send_keys(logins[0])
 
         password.clear()
-        password.send_keys(login_password)
+        password.send_keys(logins[1])
 
         driver.find_element_by_xpath(
             '//*[@id="login"]/div[4]/form/div/input[12]').click()
@@ -77,10 +77,11 @@ for product_tree in tree.xpath('//*[@id="user-repositories-list"]/ul'):
         try:
             driver.find_element_by_xpath(
                 '//*[@id="js-flash-container"]/div/div')
-            sleep(1000000)
+            debug.error("Invalid Logins")
+            input()
+            exit()
         except:
-            pass
+            stared.append(title)
+            debug.working("Stared {}".format(title))
+            
         sleep(2)
-
-# "username": "YOUR USERNAME/EMAIL FOR GITHUB",
-# "password": "YOUR GITHUB PASSWORD (needed for login to star repo)"

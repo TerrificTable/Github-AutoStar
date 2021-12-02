@@ -5,8 +5,8 @@
         "TerrificTable",
         "24hoster"
     ],
-    "logins": {
-        "username": "abc",
-        "password": "abc"
-    }
+    "logins": [
+        "abc",
+        "abc"
+    ]
 }
