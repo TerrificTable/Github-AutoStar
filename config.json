@@ -4,5 +4,9 @@
     "Github-Usernames": [
         "TerrificTable",
         "24hoster"
-    ]
+    ],
+    "logins": {
+        "username": "abc",
+        "password": "abc"
+    }
 }
