@@ -41,6 +41,24 @@ def loaded(driver, xpath, xpath1=None):
         loaded(xpath)
 
 
+amt = 0
+
+
+def mfa(driver):
+    global amt
+    try:
+        mfaInput = driver.find_element_by_xpath('//*[@id="otp"]')
+        mfaCode = input("2FA Code: ")
+        mfaInput.clear()
+        mfaInput.send_keys(mfaCode)
+    except:
+        amt += 1
+        if amt > 1:
+            pass
+        sleep(1)
+        mfa(driver)
+
+
 def main(headless):
     get_config()
     options = ChromeOptions()
@@ -85,6 +103,7 @@ def main(headless):
                 debug.error(" Invalid Logins")
                 input()
             except:
+                mfa(driver)
                 stared.append(title)
                 debug.working(" Stared {}".format(title))
             sleep(2)
